@@ -1,4 +1,4 @@
-function globalError(pool, callback, err, result, entity) {
+async function globalError(pool, callback, err, result, entity) {
     if (!pool) {
         callback({
             status: 500,
@@ -26,7 +26,14 @@ function globalError(pool, callback, err, result, entity) {
                 message: "The entered data type is not correct",
                 detail: err
             });
+        } else if (err.code === "ER_DUP_ENTRY") {
+            callback({
+                status: 400,
+                message: err.message,
+                detail: err
+            });
         } else {
+            console.log(err);
             callback({
                 status: 500,
                 message: "Unknown error",
@@ -39,6 +46,7 @@ function globalError(pool, callback, err, result, entity) {
             message: `No registered ${entity} found with the entered search criteria`
         });
     } else {
+        console.log(err);
         callback({
             status: 500,
             message: "Unknown behavior",
@@ -47,80 +55,63 @@ function globalError(pool, callback, err, result, entity) {
     }
 }
 
-function executeQuery(pool, query, params, successMessage, callback, entity) {
-    pool.getConnection((err, connection) => {
-        if (err) {
-            return globalError(pool, callback, err, null, entity);
+async function executeQuery(pool, query, params, successMessage, callback, entity) {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+
+        await connection.beginTransaction();
+
+        const [result] = await connection.query(query, params);
+
+        if (result.affectedRows === 0 || result.length === 0) {
+            await connection.rollback();
+            connection.release();
+            return globalError(pool, callback, null, result, entity);
         }
 
-        connection.beginTransaction((transErr) => {
-            if (transErr) {
-                connection.release();
-                return globalError(pool, callback, transErr, null, entity);
-            }
+        await connection.commit();
 
-            connection.query(query, params, (queryErr, result) => {
-                if (queryErr || result.affectedRows === 0 || result.length === 0) {
-                    return connection.rollback(() => {
-                        connection.release();
-                        globalError(pool, callback, queryErr, result, entity);
-                    });
-                }
+        connection.release();
 
-                connection.commit((commitErr) => {
-                    if (commitErr) {
-                        return connection.rollback(() => {
-                            connection.release();
-                            globalError(pool, callback, commitErr, result, entity);
-                        });
-                    }
-
-                    connection.release();
-                    callback(undefined, {
-                        message: successMessage,
-                        detail: result
-                    });
-                });
-            });
+        callback(undefined, {
+            message: successMessage,
+            detail: result
         });
-    });
-};
+    } catch (err) {
+        if (connection) {
+            await connection.rollback();
+            connection.release();
+        }
+        globalError(pool, callback, err, null, entity);
+    }
+}
 
 async function readQuery(pool, query, params, callback, entity) {
     try {
-        // Obtén la conexión de forma asincrónica
         const connection = await pool.getConnection();
-
         try {
-            // Ejecuta la consulta de forma asincrónica
             const [result] = await connection.query(query, params);
 
             if (!result || result.length === 0) {
-                // Si no hay resultados, pasa el control a globalError
                 return globalError(pool, callback, null, result, entity);
             }
-
-            // Si la consulta fue exitosa y hay resultados, llama al callback con los datos
             callback(null, { result });
         } catch (err) {
-            // Si ocurre un error durante la ejecución de la consulta, pasa el control a globalError
             globalError(pool, callback, err, null, entity);
         } finally {
-            // Libera la conexión independientemente del resultado
             connection.release();
         }
     } catch (err) {
-        // Si no se pudo obtener una conexión, pasa el control a globalError
         globalError(pool, callback, err, null, entity);
     }
 }
 
 
-
-const utilities = {
+const u = {
     globalError,
     executeQuery,
     readQuery,
 };
 
-export default utilities;
+export default u;

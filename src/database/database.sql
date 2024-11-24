@@ -4,8 +4,8 @@ USE trabajo_final;
 
 CREATE TABLE IF NOT EXISTS user(
   user_id INT PRIMARY KEY AUTO_INCREMENT,
-  license INT NOT NULL UNIQUE,
   full_name VARCHAR(100) NOT NULL,
+  license INT NOT NULL UNIQUE,
   date_birth DATE NOT NULL,
   password VARCHAR(255) NOT NULL,
   billing_address VARCHAR(100) NOT NULL,
@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS vehicle(
 
 CREATE TABLE IF NOT EXISTS fine_reason(
   reason_id INT PRIMARY KEY AUTO_INCREMENT,
-  reason_description VARCHAR(255) NOT NULL UNIQUE
+  reason_description VARCHAR(255) NOT NULL UNIQUE,
+  amount DECIMAL(10,2) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS fine(
   fine_id INT PRIMARY KEY AUTO_INCREMENT,
-  amount DECIMAL(10,2) NOT NULL,
   issued_at DATETIME NOT NULL,
   fine_description VARCHAR(255) NOT NULL,
   paid BOOLEAN NOT NULL DEFAULT false,

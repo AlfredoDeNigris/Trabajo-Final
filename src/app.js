@@ -1,6 +1,7 @@
 import express from 'express';
 import db from './config/connectionConfig.js';
 import user from './controller/userC.js';
+import inspector from './controller/inspectorC.js';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 
 app.use('/user', user);
+app.use('/inspector', inspector);
 
 app.get('/isAlive', (req, res) => {
     res.sendStatus(200);
@@ -29,16 +31,3 @@ const puerto = 8080;
 app.listen(puerto, () => {
     console.log(`Servidor escuchando en http://localhost:${puerto}`);
 });
-
-
-/*async function getUserByName(full_name) {
-    const query = "SELECT * FROM user WHERE full_name = ?"
-    try {
-        const [rows] = await db.execute(query, [full_name]); //tener presenta si usar execute o query
-        return rows.length > 0 ? rows : console.log(`no hay usuarios con el nombre ${full_name}`);
-    } catch (err) {
-        throw new Error(`Error: ${err.message}`);
-    }
-}
-
-getUserByName("Juan");*/
