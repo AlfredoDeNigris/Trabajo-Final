@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import u from "../utilities.js";
+import u from "../utils/utilities.js";
 const inspectorDb = {};
 
 const entity = "inspector";
@@ -30,16 +30,14 @@ LEFT JOIN inspector i ON u.user_id = i.user_id WHERE badge_number = ?`;
 };
 
 //Function to create a new inspector
-inspectorDb.create = async (pool, inspector, callback) => {
+inspectorDb.registerInspector = async (pool, inspector, callback) => {
     try {
         const query = `START TRANSACTION;
             INSERT INTO user (full_name, license, date_birth, password, billing_address, phone_number, email, role) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+            VALUES (?, ?, ?, ?, ?, ?, ?, "inspector");
             
             SET @last_user_id = LAST_INSERT_ID();
-
-            ${inspector.role === "inspector" ? `INSERT INTO inspector (user_id) VALUES (@last_user_id);` : ''}
-
+            INSERT INTO inspector (user_id) VALUES (@last_user_id);
             COMMIT;`;
 
         const hashedPassword = await bcrypt.hash(inspector.password, 10);
@@ -50,11 +48,10 @@ inspectorDb.create = async (pool, inspector, callback) => {
             hashedPassword,
             inspector.billing_address,
             inspector.phone_number,
-            inspector.email,
-            inspector.role
+            inspector.email
         ];
 
-        let successMessage = 'Inspector registered successfuly.';
+        let successMessage = `${entity} registered successfuly.`;
 
         await u.executeQuery(pool, query, params, successMessage, callback, entity);
     } catch (err) {
@@ -91,7 +88,7 @@ inspectorDb.delete = async (pool, badge_number, role, callback) => {
 
         await connection.commit();
 
-        const successMessage = 'Inspector deleted successfully';
+        const successMessage = `The resignation of ${entity} to ${role} was successful.`;
         callback(null, { message: successMessage });
 
     } catch (err) {

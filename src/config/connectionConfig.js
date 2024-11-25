@@ -17,10 +17,10 @@ const db = createPool({
 (async () => {
     try {
         const connection = await db.getConnection();
-        console.log("Conexión exitosa");
+        console.log("Successfully connected to the database");
         connection.release();
     } catch (err) {
-        console.error('Error al conectar con la base de datos:', err);
+        console.error('Error connecting to the database:', err);
         process.exit(1);
     }
 })();

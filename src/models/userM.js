@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import u from "../utilities.js";
+import u from "../utils/utilities.js";
 const userDb = {};
 
 const entity = "user";
@@ -26,10 +26,10 @@ userDb.getUP = (pool, user_id, callback) => {
     }
 };
 
-//Function to get a specific user by full_name (maybe)
+//Function to get a specific user by full_name
 userDb.getUF = (pool, full_name, callback) => {
     try {
-        const query = 'SELECT full_name, license, date_birth, billing_address, phone_number, email FROM user WHERE full_name = ?';
+        const query = 'SELECT full_name, license, date_birth, billing_address, phone_number, email, user_id, password FROM user WHERE full_name = ?';
         const params = [full_name];
 
         u.readQuery(pool, query, params, callback, entity);
@@ -41,9 +41,9 @@ userDb.getUF = (pool, full_name, callback) => {
 //Function to create a new user
 userDb.create = async (pool, user, callback) => {
     try {
-        const query = 'INSERT INTO user (full_name, license, date_birth, password, billing_address, phone_number, email, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO user (full_name, license, date_birth, password, billing_address, phone_number, email, role) VALUES (?, ?, ?, ?, ?, ?, ?, "driver")';
         const hashedPassword = await bcrypt.hash(user.password, 10);
-        const params = [user.full_name, user.license, user.date_birth, hashedPassword, user.billing_address, user.phone_number, user.email, user.role];
+        const params = [user.full_name, user.license, user.date_birth, hashedPassword, user.billing_address, user.phone_number, user.email];
         let successMessage = `Your registration has been successful.`;
 
         await u.executeQuery(pool, query, params, successMessage, callback, entity);
@@ -58,7 +58,7 @@ userDb.update = async (pool, user_id, user, callback) => {
         const query = 'UPDATE user SET full_name = ?, license = ?, date_birth = ?, password = ?, billing_address = ?, phone_number = ?, email = ? WHERE user_id = ?';
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const params = [user.full_name, user.license, user.date_birth, hashedPassword, user.billing_address, user.phone_number, user.email, user_id];
-        let successMessage = `Profile information updated successfully!`;
+        let successMessage = `${entity} information updated successfully!`;
 
         await u.executeQuery(pool, query, params, successMessage, callback, entity);
     } catch (err) {
@@ -72,7 +72,7 @@ userDb.delete = (pool, user_id, callback) => {
     try {
         const query = 'DELETE FROM user WHERE user_id = ?';
         const params = [user_id];
-        let successMessage = `user deleted successfully`;
+        let successMessage = `${entity} deleted successfully`;
 
         u.executeQuery(pool, query, params, successMessage, callback, entity);
     } catch (err) {
