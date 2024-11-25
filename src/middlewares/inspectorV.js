@@ -1,13 +1,4 @@
-import { check, validationResult } from "express-validator";
-
-
-const validate = (req, res, next) => {
-    const err = validationResult(req);
-    if (!err.isEmpty()) {
-        return res.status(400).json({ errors: err.array() });
-    }
-    next();
-};
+import { check } from "express-validator";
 
 
 const getInspectorRules = () => [
@@ -48,7 +39,6 @@ const deleteInspectorRules = () => [
 
 
 const v = {
-    validate,
     getInspectorRules,
     createInspectorRules,
     deleteInspectorRules,

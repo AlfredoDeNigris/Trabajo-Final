@@ -5,6 +5,7 @@ USE trabajo_final;
 CREATE TABLE IF NOT EXISTS user(
   user_id INT PRIMARY KEY AUTO_INCREMENT,
   full_name VARCHAR(100) NOT NULL,
+  username VARCHAR (25) UNIQUE NOT NULL,
   license INT NOT NULL UNIQUE,
   date_birth DATE NOT NULL,
   password VARCHAR(255) NOT NULL,

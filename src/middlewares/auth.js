@@ -13,9 +13,9 @@ function login(req, res) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { full_name, password } = req.body;
+    const { username, password } = req.body;
 
-    userDb.getUF(req.pool, full_name, (err, result) => {
+    userDb.getUF(req.pool, username, (err, result) => {
         try {
             if (!result || !result.result || result.result.length === 0) {
                 return res.status(404).send({

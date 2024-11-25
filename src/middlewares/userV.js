@@ -1,4 +1,4 @@
-import { check, validationResult } from "express-validator";
+import { check } from "express-validator";
 
 const getUserRules = () => [
     check("user_id")
@@ -10,7 +10,11 @@ const registerUserRules = () => [
     check("full_name")
         .notEmpty().withMessage("Full name is required")
         .isString().withMessage("Full name must be a string")
-        .matches(/^[a-zA-ZáÁéÉíÍóÓúÚüÜñÑçÇ\s]+$/).withMessage("Full name contains invalid characters."),
+        .matches(/^[a-zA-ZáÁéÉíÍóÓúÚüÜñÑçÇ\s]+$/).withMessage("The inputed full name contains invalid characters."),
+    check("username")
+        .notEmpty().withMessage("Username is required")
+        .isString().withMessage("Username must be a string")
+        .isLength({ min: 8 }).withMessage("Username must be at least 6 characters"),
     check("license")
         .notEmpty().withMessage("License is required"),
     check("date_birth")
@@ -35,7 +39,11 @@ const updateUserRules = () => [
     check("full_name")
         .notEmpty().withMessage("Full name is required")
         .isString().withMessage("Full name must be a string")
-        .matches(/^[a-zA-ZáÁéÉíÍóÓúÚüÜñÑçÇ\s]+$/).withMessage("Full name contains invalid characters."),
+        .matches(/^[a-zA-ZáÁéÉíÍóÓúÚüÜñÑçÇ\s]+$/).withMessage("The inputed full name contains invalid characters."),
+    check("username")
+        .notEmpty().withMessage("Username is required")
+        .isString().withMessage("Username must be a string")
+        .isLength({ min: 8 }).withMessage("Username must be at least 6 characters"),
     check("license")
         .notEmpty().withMessage("License is required"),
     check("date_birth")
