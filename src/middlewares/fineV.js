@@ -7,9 +7,6 @@ const getFineByIdRules = () => [
 ];
 
 const issueFineRules = () => [
-    check("issued_at")
-        .notEmpty().withMessage("Issued at is required")
-        .isISO8601().withMessage("Issued at must be a valid ISO 8601 date-time"),
     check("fine_description")
         .notEmpty().withMessage("Fine description is required")
         .isString().withMessage("Fine description must be a string")

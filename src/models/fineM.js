@@ -1,4 +1,5 @@
 import u from "../utils/utilities.js";
+import moment from 'moment';
 const fineDb = {};
 
 const entity = "fine";
@@ -31,15 +32,22 @@ fineDb.getFI = (pool, user_id, callback) => {
 //Function to issue a new fine
 fineDb.issueFine = async (pool, fine, callback) => {
     try {
-        const query = 'INSERT INTO fine (issued_at, fine_description, patent, badge_number, reason_id) VALUES (?, ?, ?, ?, ?)';
-        const params = [fine.issued_at, fine.fine_description, fine.patent, fine.badge_number, fine.reason_id];
-        let successMessage = `Fine issued successfully.`;
+        const getLocalTime = () => {
+            return moment().utcOffset(-6).format('YYYY-MM-DD HH:mm:ss');
+        };
+
+        const issuedAt = getLocalTime();
+
+        const query = `INSERT INTO fine (issued_at, fine_description, patent, badge_number, reason_id) VALUES (?, ?, ?, ?, ?)`;
+        const params = [issuedAt, fine.fine_description, fine.patent, fine.badge_number, fine.reason_id];
+        const successMessage = `Fine issued successfully.`;
 
         await u.executeQuery(pool, query, params, successMessage, callback, entity);
     } catch (err) {
         u.globalError(pool, callback, err, null, entity);
     }
 };
+
 
 //Function to pay a fine
 fineDb.payFine = async (pool, fine_id, callback) => {
