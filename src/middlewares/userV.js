@@ -14,14 +14,14 @@ const registerUserRules = () => [
     check("username")
         .notEmpty().withMessage("Username is required")
         .isString().withMessage("Username must be a string")
-        .isLength({ min: 8 }).withMessage("Username must be at least 6 characters"),
+        .isLength({ min: 8 }).withMessage("Username must be at least 8 characters"),
     check("license")
         .notEmpty().withMessage("License is required"),
     check("date_birth")
         .notEmpty().withMessage("Date of birth is required"),
     check("password")
         .notEmpty().withMessage("Password is required")
-        .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+        .isLength({ min: 6 }).withMessage("Password must be at least 8 characters"),
     check("billing_address")
         .notEmpty().withMessage("Billing address is required"),
     check("phone_number")
@@ -29,6 +29,7 @@ const registerUserRules = () => [
         .isNumeric().withMessage("Phone number must be a number"),
     check("email")
         .notEmpty().withMessage("Email is required")
+        .normalizeEmail()
         .isEmail().withMessage("Invalid email address"),
 ];
 
@@ -43,7 +44,7 @@ const updateUserRules = () => [
     check("username")
         .notEmpty().withMessage("Username is required")
         .isString().withMessage("Username must be a string")
-        .isLength({ min: 8 }).withMessage("Username must be at least 6 characters"),
+        .isLength({ min: 8 }).withMessage("Username must be at least 8 characters"),
     check("license")
         .notEmpty().withMessage("License is required"),
     check("date_birth")

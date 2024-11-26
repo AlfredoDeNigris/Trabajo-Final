@@ -26,6 +26,7 @@ const createInspectorRules = () => [
         .isNumeric().withMessage("Phone number must be a number"),
     check("email")
         .notEmpty().withMessage("Email is required")
+        .normalizeEmail()
         .isEmail().withMessage("Invalid email address"),
 ];
 

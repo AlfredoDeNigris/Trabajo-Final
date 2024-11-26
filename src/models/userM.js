@@ -17,7 +17,7 @@ userDb.getU = (pool, callback) => {
 //Function to get a specific user by user_id
 userDb.getUP = (pool, user_id, callback) => {
     try {
-        const query = 'SELECT full_name, usernmae, license, date_birth, billing_address, phone_number, email, role FROM user WHERE user_id = ?';
+        const query = 'SELECT full_name, username, license, date_birth, billing_address, phone_number, email, role FROM user WHERE user_id = ?';
         const params = [user_id];
 
         u.readQuery(pool, query, params, callback, entity);
@@ -29,7 +29,7 @@ userDb.getUP = (pool, user_id, callback) => {
 //Function to get a specific user by username
 userDb.getUF = (pool, username, callback) => {
     try {
-        const query = 'SELECT full_name, license, date_birth, billing_address, phone_number, email, user_id, password FROM user WHERE username = ?';
+        const query = 'SELECT full_name, license, date_birth, billing_address, phone_number, email, user_id, password, role FROM user WHERE username = ?';
         const params = [username];
 
         u.readQuery(pool, query, params, callback, entity);
@@ -55,7 +55,7 @@ userDb.create = async (pool, user, callback) => {
 //Function to update a user's information
 userDb.update = async (pool, user_id, user, callback) => {
     try {
-        const query = 'UPDATE user SET full_name = ?, username = ? license = ?, date_birth = ?, password = ?, billing_address = ?, phone_number = ?, email = ? WHERE user_id = ?';
+        const query = 'UPDATE user SET full_name = ?, username = ?, license = ?, date_birth = ?, password = ?, billing_address = ?, phone_number = ?, email = ? WHERE user_id = ?';
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const params = [user.full_name, user.username, user.license, user.date_birth, hashedPassword, user.billing_address, user.phone_number, user.email, user_id];
         let successMessage = `${entity} information updated successfully!`;

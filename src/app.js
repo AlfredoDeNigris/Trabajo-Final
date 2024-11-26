@@ -1,10 +1,18 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import db from './config/connectionConfig.js';
 import userRoutes from './routes/userR.js';
 import inspectorRoutes from './routes/inspectorR.js';
 import vehicleRoutes from './routes/vehicleR.js';
 import fineRoutes from './routes/fineR.js';
 import a from './middlewares/auth.js';
+
+
+dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in the environment variables.");
+}
 
 const app = express();
 
@@ -34,8 +42,4 @@ app.use((req, res) => {
     res.status(404).send('Resource not found.');
 });
 
-const port = 8080;
-
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-});
+export default app;

@@ -33,8 +33,8 @@ LEFT JOIN inspector i ON u.user_id = i.user_id WHERE badge_number = ?`;
 inspectorDb.registerInspector = async (pool, inspector, callback) => {
     try {
         const query = `START TRANSACTION;
-            INSERT INTO user (full_name, license, date_birth, password, billing_address, phone_number, email, role) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, "inspector");
+            INSERT INTO user (full_name, username, license, date_birth, password, billing_address, phone_number, email, role) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, "inspector");
             
             SET @last_user_id = LAST_INSERT_ID();
             INSERT INTO inspector (user_id) VALUES (@last_user_id);
@@ -43,6 +43,7 @@ inspectorDb.registerInspector = async (pool, inspector, callback) => {
         const hashedPassword = await bcrypt.hash(inspector.password, 10);
         const params = [
             inspector.full_name,
+            inspector.username,
             inspector.license,
             inspector.date_birth,
             hashedPassword,

@@ -7,13 +7,13 @@ import v from '../middlewares/fineV.js'
 const router = Router();
 
 
-router.get("/", a.verify, fineC.getF);
+router.get("/", a.authorizeRole(['inspector', 'admin']), fineC.getF);
 
-router.get("/:fine_id", a.verify, v.getFineByIdRules(), validate, fineC.getFI);
+router.get("/:fine_id", a.authorizeRole(['driver', 'inspector', 'admin']), v.getFineByIdRules(), validate, fineC.getFI);
 
-router.post('/issue', a.verify, v.issueFineRules(), validate, fineC.issueFine);
+router.post('/issue', a.authorizeRole(['admin', 'inspector']), v.issueFineRules(), validate, fineC.issueFine);
 
-router.patch("/pay/:fine_id", a.verify, v.payFineRules(), validate, fineC.payFine);
+router.patch("/pay/:fine_id", a.authorizeRole(['admin']), v.payFineRules(), validate, fineC.payFine);
 
 
 export default router;
